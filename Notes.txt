@@ -1,0 +1,5 @@
+Entity FrameWork:
+1. Install sql entity framework.
+2. Create DB context in DataContext.
+3. Dependency injection in startup with sql query. 
+4. Use this dataContext in our controller.
