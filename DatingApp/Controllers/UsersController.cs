@@ -19,18 +19,34 @@ namespace DatingApp.Controllers
             _context = Context;
         }
 
-        [HttpGet]
-        [Route("GetUsers")]
-        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers() 
+        [HttpGet("GetUsers")]
+        public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         {
-            return await _context.Users.ToListAsync();
+            try
+            { 
+                return await _context.Users.ToListAsync();
+            }
+            catch (Exception e)
+            { 
+                Console.WriteLine(e);
+
+                return null;
+            }
         }
 
-        [HttpGet]
-        [Route("GetUser")]
+        [HttpGet("GetUser")]
         public async Task<ActionResult<AppUser>> GetUsers(int id)
         {
-            return await _context.Users.FindAsync(id);
+            try
+            {
+                return await _context.Users.FindAsync(id);
+            }
+            catch(Exception e)
+            {
+                Console.WriteLine(e);
+
+                return null;
+            }
         }
     }
 }
