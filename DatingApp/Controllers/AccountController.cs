@@ -9,6 +9,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using DatingApp.Interface;
 
 namespace DatingApp.Controllers
 {
@@ -16,13 +17,17 @@ namespace DatingApp.Controllers
     {
         private readonly DataContext _context;
 
-        public AccountController(DataContext Context)
+        private readonly ITokenService _tokenService;
+
+        public AccountController(DataContext Context, ITokenService tokenService)
         {
+            _tokenService = tokenService;
+
             _context = Context;
         }
 
         [HttpPost("register")]
-        public async Task<ActionResult<AppUser>> Register(RegisterDTO registerDTO)
+        public async Task<ActionResult<UserDTO>> Register(RegisterDTO registerDTO)
         {
             try
             {
@@ -44,7 +49,11 @@ namespace DatingApp.Controllers
 
                 await _context.SaveChangesAsync();
 
-                return user;
+                return new UserDTO
+                {
+                    UserName = user.UserName,
+                    Token = _tokenService.CreateToken(user)
+                };
             }
             catch (Exception e)
             {
@@ -67,7 +76,7 @@ namespace DatingApp.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<ActionResult<AppUser>> login(LoginDTO loginDTO)
+        public async Task<ActionResult<UserDTO>> login(LoginDTO loginDTO)
         {
             try
             {
@@ -88,7 +97,11 @@ namespace DatingApp.Controllers
                         return Unauthorized("invalid password");
                 }
 
-                return user;
+                return new UserDTO
+                {
+                    UserName = user.UserName,
+                    Token = _tokenService.CreateToken(user)
+                };
             }
             catch (Exception e)
             {
