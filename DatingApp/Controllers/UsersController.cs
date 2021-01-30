@@ -1,5 +1,6 @@
 ﻿using DatingApp.Data;
 using DatingApp.Entities;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ namespace DatingApp.Controllers
         }
 
         [HttpGet("GetUsers")]
+        [Authorize]
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         {
             try
@@ -35,7 +37,7 @@ namespace DatingApp.Controllers
         }
 
         [HttpGet("GetUser")]
-        public async Task<ActionResult<AppUser>> GetUsers(int id)
+        public async Task<ActionResult<AppUser>> GetUser(int id)
         {
             try
             {

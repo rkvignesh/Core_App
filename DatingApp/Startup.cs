@@ -14,6 +14,10 @@ using Microsoft.OpenApi.Models;
 using Microsoft.EntityFrameworkCore;
 using DatingApp.Interface;
 using DatingApp.Service;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using DatingApp.Extensions;
 
 namespace DatingApp
 {
@@ -29,11 +33,8 @@ namespace DatingApp
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddScoped<ITokenService, TokenService>();
-            services.AddDbContext<DataContext>(options =>
-            {
-                options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
-            });
+
+            services.AddApplicationServices(Configuration);
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
@@ -43,7 +44,7 @@ namespace DatingApp
 
             services.AddCors();
 
-  
+            services.AddIdentityServices(Configuration);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -60,7 +61,9 @@ namespace DatingApp
 
             app.UseCors(policy=>policy.AllowAnyHeader().AllowAnyMethod().WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
-            app.UseAuthorization();
+            app.UseAuthentication();
+
+             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
