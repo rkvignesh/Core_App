@@ -21,7 +21,7 @@ namespace DatingApp.Controllers
         }
 
         [HttpGet("GetUsers")]
-        [Authorize]
+        [AllowAnonymous]
         public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers()
         {
             try
@@ -37,6 +37,7 @@ namespace DatingApp.Controllers
         }
 
         [HttpGet("GetUser")]
+        [Authorize]
         public async Task<ActionResult<AppUser>> GetUser(int id)
         {
             try
