@@ -78,35 +78,28 @@ namespace DatingApp.Controllers
         [HttpPost("login")]
         public async Task<ActionResult<UserDTO>> login(LoginDTO loginDTO)
         {
-            try
+            var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == loginDTO.username);
+
+            if (user == null)
             {
-                var user = await _context.Users.SingleOrDefaultAsync(x => x.UserName == loginDTO.username);
-
-                if (user == null)
-                {
-                    return Unauthorized("invalid username");
-                }
-
-                using var hmac = new HMACSHA512(user.PasswordSalt);
-
-                var computedHASH = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.password));
-
-                for (int i = 0; i < computedHASH.Length; i++)
-                {
-                    if (user.PasswordHash[i] != computedHASH[i])
-                        return Unauthorized("invalid password");
-                }
-
-                return new UserDTO
-                {
-                    UserName = user.UserName,
-                    Token = _tokenService.CreateToken(user)
-                };
+                return Unauthorized("invalid username");
             }
-            catch (Exception e)
+
+            using var hmac = new HMACSHA512(user.PasswordSalt);
+
+            var computedHASH = hmac.ComputeHash(Encoding.UTF8.GetBytes(loginDTO.password));
+
+            for (int i = 0; i < computedHASH.Length; i++)
             {
-                return BadRequest("Exception: " + e.Message);
+                if (user.PasswordHash[i] != computedHASH[i])
+                    return Unauthorized("invalid password");
             }
+
+            return new UserDTO
+            {
+                UserName = user.UserName,
+                Token = _tokenService.CreateToken(user)
+            };
         }
     }
 }
